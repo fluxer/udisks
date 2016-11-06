@@ -36,8 +36,6 @@ AC_PROG_LIBTOOL
 # Compilation
 #
 
-GNOME_COMPILE_WARNINGS([maximum])
-
 CC_CHECK_CFLAGS_APPEND([                          \
         -Waggregate-return                        \
         -Wall                                     \
@@ -95,8 +93,6 @@ if test -z "$XSLTPROC"; then
   AC_MSG_ERROR([xsltproc is needed])
 fi
 
-GTK_DOC_CHECK([1.3],[--flavour no-tmpl])
-
 AC_ARG_ENABLE(man,
               [AS_HELP_STRING([--enable-man],
                               [generate man pages [default=auto]])],,
@@ -112,8 +108,6 @@ AS_IF([test "$enable_man" != no], [
   enable_man=yes
 ])
 AM_CONDITIONAL(ENABLE_MAN, test "$enable_man" != no)
-
-GOBJECT_INTROSPECTION_CHECK([0.6.2])
 
 # Behavior
 #
@@ -141,14 +135,6 @@ AC_SUBST(GLIB_LIBS)
 PKG_CHECK_MODULES(GIO, [gio-unix-2.0 >= 2.36])
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
-
-PKG_CHECK_MODULES(POLKIT_GOBJECT_1, [polkit-gobject-1 >= 0.102])
-AC_SUBST(POLKIT_GOBJECT_1_CFLAGS)
-AC_SUBST(POLKIT_GOBJECT_1_LIBS)
-
-PKG_CHECK_MODULES(POLKIT_AGENT_1, [polkit-agent-1 >= 0.102])
-AC_SUBST(POLKIT_AGENT_1_CFLAGS)
-AC_SUBST(POLKIT_AGENT_1_LIBS)
 
 PKG_CHECK_MODULES(LIBATASMART, [libatasmart >= 0.17])
 AC_SUBST(LIBATASMART_CFLAGS)
@@ -208,15 +194,8 @@ if test "x$enable_acl" != "xno"; then
 fi
 AM_CONDITIONAL(HAVE_ACL, [test "$have_acl" = "yes"])
 
+AC_DEFINE([GETTEXT_PACKAGE], "udisks", "")
 
-# Internationalization
-#
-
-IT_PROG_INTLTOOL([$INTLTOOL_REQUIRED])
-GETTEXT_PACKAGE=udisks2
-AC_SUBST([GETTEXT_PACKAGE])
-AM_GLIB_GNU_GETTEXT
-AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE],["$GETTEXT_PACKAGE"],[gettext domain])
 
 # Generate
 #
@@ -232,7 +211,6 @@ tools/Makefile
 doc/Makefile
 doc/version.xml
 doc/man/Makefile
-po/Makefile.in
 ])
 
 dnl ==========================================================================

@@ -22,7 +22,6 @@
 #define __UDISKS_DAEMON_TYPES_H__
 
 #include <gio/gio.h>
-#include <polkit/polkit.h>
 #include <udisks/udisks.h>
 #include <gudev/gudev.h>
 

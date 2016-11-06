@@ -24,15 +24,11 @@ udisksctl_SOURCES = 					\
 udisksctl_CFLAGS = 					\
 	$(GLIB_CFLAGS) 					\
 	$(GIO_CFLAGS)					\
-	$(POLKIT_GOBJECT_1_CFLAGS)			\
-	$(POLKIT_AGENT_1_CFLAGS)			\
 	$(NULL)
 
 udisksctl_LDADD = 					\
 	$(GLIB_LIBS) 					\
 	$(GIO_LIBS)					\
-	$(POLKIT_GOBJECT_1_LIBS)			\
-	$(POLKIT_AGENT_1_LIBS)				\
 	$(top_builddir)/udisks/libudisks2.la		\
 	$(NULL)
 

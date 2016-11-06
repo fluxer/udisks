@@ -33,13 +33,6 @@ AM_CPPFLAGS = \
 	$(GIO_CFLAGS)			\
 	$(NULL)
 
-GTKDOC_LIBS = 					\
-	$(GLIB_LIBS)				\
-	$(GIO_LIBS)				\
-	$(top_builddir)/udisks/libudisks2.la	\
-	$(top_builddir)/src/libudisks-daemon.la	\
-	$(NULL)
-
 # Extra options to supply to gtkdoc-mkdb
 MKDB_OPTIONS = --output-format=xml --sgml-mode --name-space=udisks
 
@@ -60,13 +53,11 @@ expand_content_files =		\
 extra_files =			\
 	$(NULL)
 
-include $(top_srcdir)/gtk-doc.make
 
-
-EXTRA_DIST +=			\
+EXTRA_DIST =			\
 	version.xml.in
 
-CLEANFILES +=   		\
+CLEANFILES =   		\
 	$(DOC_MODULE)-decl-list.txt	\
 	$(DOC_MODULE)-decl.txt		\
 	$(DOC_MODULE)-overrides.txt	\

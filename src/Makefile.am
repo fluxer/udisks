@@ -17,7 +17,6 @@ AM_CPPFLAGS = \
 	-DPACKAGE_LIB_DIR=\""$(libdir)"\" 			\
 	-D_POSIX_PTHREAD_SEMANTICS -D_REENTRANT			\
 	-DUDISKS_COMPILATION					\
-	$(POLKIT_GOBJECT_1_CFLAGS) 				\
 	$(GUDEV_CFLAGS) 					\
 	$(GLIB_CFLAGS) 						\
 	$(GIO_CFLAGS)						\
@@ -88,7 +87,6 @@ libudisks_daemon_la_CFLAGS =				\
 	$(GIO_CFLAGS)					\
 	$(GUDEV_CFLAGS)					\
 	$(LIBATASMART_CFLAGS)				\
-	$(POLKIT_GOBJECT_1_CFLAGS) 			\
 	$(ACL_CFLAGS)					\
 	$(LIBSYSTEMD_LOGIN_CFLAGS)			\
 	$(NULL)
@@ -98,7 +96,6 @@ libudisks_daemon_la_LIBADD =				\
 	$(GIO_LIBS)					\
 	$(GUDEV_LIBS)					\
 	$(LIBATASMART_LIBS)				\
-	$(POLKIT_GOBJECT_1_LIBS) 			\
 	$(ACL_LIBS)					\
 	$(LIBSYSTEMD_LOGIN_LIBS)			\
 	$(top_builddir)/udisks/libudisks2.la		\

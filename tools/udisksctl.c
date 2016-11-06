@@ -35,10 +35,6 @@
 
 #include <locale.h>
 
-#include <polkit/polkit.h>
-#define POLKIT_AGENT_I_KNOW_API_IS_SUBJECT_TO_CHANGE
-#include <polkitagent/polkitagent.h>
-
 static UDisksClient *client = NULL;
 static GMainLoop *loop = NULL;
 
@@ -54,72 +50,6 @@ G_GNUC_UNUSED static void completion_debug (const gchar *format, ...);
 
 static void remove_arg (gint num, gint *argc, gchar **argv[]);
 static void modify_argv0_for_command (gint *argc, gchar **argv[], const gchar *command);
-
-
-/* ---------------------------------------------------------------------------------------------------- */
-
-static PolkitAgentListener *local_polkit_agent = NULL;
-static gpointer local_agent_handle = NULL;
-
-static gboolean
-setup_local_polkit_agent (void)
-{
-  gboolean ret;
-  GError *error;
-  PolkitSubject *subject;
-
-  ret = FALSE;
-  subject = NULL;
-
-  if (local_polkit_agent != NULL)
-    goto out;
-
-  subject = polkit_unix_process_new_for_owner (getpid (), 0, getuid ());
-
-  error = NULL;
-  /* this will fail if we can't find a controlling terminal */
-  local_polkit_agent = polkit_agent_text_listener_new (NULL, &error);
-  if (local_polkit_agent == NULL)
-    {
-      g_printerr ("Error creating textual authentication agent: %s (%s, %d)\n",
-                  error->message,
-                  g_quark_to_string (error->domain),
-                  error->code);
-      g_error_free (error);
-      goto out;
-    }
-  local_agent_handle = polkit_agent_listener_register (local_polkit_agent,
-                                                       POLKIT_AGENT_REGISTER_FLAGS_RUN_IN_THREAD,
-                                                       subject,
-                                                       NULL, /* object_path */
-                                                       NULL, /* GCancellable */
-                                                       &error);
-  if (local_agent_handle == NULL)
-    {
-      g_printerr ("Error registering local authentication agent: %s (%s, %d)\n",
-                  error->message,
-                  g_quark_to_string (error->domain),
-                  error->code);
-      g_error_free (error);
-      goto out;
-    }
-
-  ret = TRUE;
-
- out:
-  if (subject != NULL)
-    g_object_unref (subject);
-  return ret;
-}
-
-static void
-shutdown_local_polkit_agent (void)
-{
-  if (local_agent_handle != NULL)
-    polkit_agent_listener_unregister (local_agent_handle);
-  if (local_polkit_agent != NULL)
-    g_object_unref (local_polkit_agent);
-}
 
 
 /* ---------------------------------------------------------------------------------------------------- */
@@ -816,8 +746,7 @@ handle_command_mount_unmount (gint        *argc,
                                               &error))
         {
           if (error->domain == UDISKS_ERROR &&
-              error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN &&
-              setup_local_polkit_agent ())
+              error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN)
             {
               g_error_free (error);
               goto try_again;
@@ -845,8 +774,7 @@ handle_command_mount_unmount (gint        *argc,
                                                 &error))
         {
           if (error->domain == UDISKS_ERROR &&
-              error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN &&
-              setup_local_polkit_agent ())
+              error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN)
             {
               g_error_free (error);
               goto try_again;
@@ -1262,8 +1190,7 @@ handle_command_unlock_lock (gint        *argc,
                                               &error))
         {
           if (error->domain == UDISKS_ERROR &&
-              error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN &&
-              setup_local_polkit_agent ())
+              error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN)
             {
               g_error_free (error);
               goto try_again;
@@ -1296,8 +1223,7 @@ handle_command_unlock_lock (gint        *argc,
                                             &error))
         {
           if (error->domain == UDISKS_ERROR &&
-              error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN &&
-              setup_local_polkit_agent ())
+              error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN)
             {
               g_error_free (error);
               goto try_again;
@@ -1636,8 +1562,7 @@ handle_command_loop (gint        *argc,
       if (!rc)
         {
           if (error->domain == UDISKS_ERROR &&
-              error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN &&
-              setup_local_polkit_agent ())
+              error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN)
             {
               g_error_free (error);
               goto setup_try_again;
@@ -1702,8 +1627,7 @@ handle_command_loop (gint        *argc,
                                          &error))
         {
           if (error->domain == UDISKS_ERROR &&
-              error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN &&
-              setup_local_polkit_agent ())
+              error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN)
             {
               g_error_free (error);
               goto delete_try_again;
@@ -1981,8 +1905,7 @@ handle_command_smart_simulate (gint        *argc,
                                                 &error))
     {
       if (error->domain == UDISKS_ERROR &&
-          error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN &&
-          setup_local_polkit_agent ())
+          error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN)
         {
           g_error_free (error);
           goto try_again;
@@ -2214,8 +2137,7 @@ handle_command_power_off (gint        *argc,
                                          &error))
     {
       if (error->domain == UDISKS_ERROR &&
-          error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN &&
-          setup_local_polkit_agent ())
+          error->code == UDISKS_ERROR_NOT_AUTHORIZED_CAN_OBTAIN)
         {
           g_error_free (error);
           goto try_again;
@@ -3430,7 +3352,6 @@ main (int argc,
   if (client != NULL)
     g_object_unref (client);
   _color_shutdown ();
-  shutdown_local_polkit_agent ();
   return ret;
 }
 

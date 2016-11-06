@@ -12,9 +12,7 @@ PKG_NAME="udisks"
     exit 1
 }
 
-which gnome-autogen.sh || {
-    echo "You need to install gnome-common"
-    exit 1
-}
+mkdir -p m4
+autoreconf -fi
 
-. gnome-autogen.sh --enable-gtk-doc "$@"
+./configure "$@"
