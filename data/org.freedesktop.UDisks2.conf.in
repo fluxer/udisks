@@ -4,9 +4,18 @@
  "-//freedesktop//DTD D-BUS Bus Configuration 1.0//EN"
  "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
 <busconfig>
-  <!-- Only root can own the service -->
+  <!-- Allow wheel and disk group members to send messages -->
+  <policy group="wheel">
+    <allow send_destination="org.freedesktop.UDisks2"/>
+  </policy>
+  <policy group="disk">
+    <allow send_destination="org.freedesktop.UDisks2"/>
+  </policy>
+
+  <!-- Allow root user to send messages -->
   <policy user="root">
     <allow own="org.freedesktop.UDisks2"/>
+    <allow send_destination="org.freedesktop.UDisks2"/>
   </policy>
 
   <!-- Anyone can send messages to the owner of org.freedesktop.UDisks2 -->
