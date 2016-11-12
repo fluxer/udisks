@@ -452,18 +452,7 @@ check_authorization_no_polkit (UDisksDaemon          *daemon,
       goto out;
     }
 
-  /* only allow root */
-  if (caller_uid == 0)
-    {
-      ret = TRUE;
-    }
-  else
-    {
-      g_dbus_method_invocation_return_error_literal (invocation,
-                                                     UDISKS_ERROR,
-                                                     UDISKS_ERROR_NOT_AUTHORIZED,
-                                                     "Not authorized to perform operation (polkit authority not available and caller is not uid 0)");
-    }
+  ret = TRUE;
 
  out:
   return ret;
