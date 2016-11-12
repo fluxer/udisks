@@ -183,7 +183,6 @@ static void
 udisks_daemon_constructed (GObject *object)
 {
   UDisksDaemon *daemon = UDISKS_DAEMON (object);
-  GError *error = NULL;
 
   daemon->object_manager = g_dbus_object_manager_server_new ("/org/freedesktop/UDisks2");
 
